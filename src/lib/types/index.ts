@@ -54,3 +54,8 @@ export const promiseErrorFunction = (error: ApiErrorResponse) => {
 
   return toast.error("Internal Server Error! Please contact support.");
 };
+
+export interface optionsType {
+  label: string;
+  value: string;
+}
