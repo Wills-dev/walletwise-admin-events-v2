@@ -61,7 +61,7 @@ const AreaChartContent = () => {
             </div>
           </div>
           <ChartDesc>
-            <span>₦${totalRevenue && numberWithCommas(totalRevenue)}</span>
+            <span>₦{totalRevenue && numberWithCommas(totalRevenue)}</span>
           </ChartDesc>
         </CardHeader>
         <CardContent>
