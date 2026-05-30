@@ -7,7 +7,7 @@ const CurrentEventWrapper = () => {
   return (
     <div className="space-y-4">
       <CurrentEventSummary />
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-4 flex-wrap ">
         <AreaChartContent />
         <PieChartContent />
       </div>
