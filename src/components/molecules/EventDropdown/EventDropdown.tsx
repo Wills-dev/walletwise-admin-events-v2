@@ -1,17 +1,9 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 import { ChevronDown, Plus } from "lucide-react";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
 const events = [
   "Annual Conference",
@@ -25,66 +17,80 @@ const EventDropdown = () => {
   const pathname = usePathname();
 
   const [eventName, setEventName] = useState("");
+  const [open, setOpen] = useState(false);
 
-  const handleSelectEvent = (eventName: string) => {
-    setEventName(eventName);
-    const slug = eventName.toLowerCase().replace(/\s+/g, "-");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectEvent = (name: string) => {
+    setEventName(name);
+    const slug = name.toLowerCase().replace(/\s+/g, "-");
 
     router.push(`${pathname}?event=${slug}`);
+    setOpen(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="w-full space-y-2 border border-[#E5E5E5] bg-white py-2.25 px-3 rounded-[10px]">
-      <label className="text-[10px] font-medium text-[#737373]">
-        Select Event
+    <div
+      ref={containerRef}
+      className="relative w-full space-y-2 border border-[#E5E5E5] bg-white py-2.25  rounded-[10px] px-1"
+    >
+      <label className="text-[10px] font-medium text-[#737373] px-2">
+        Event name
       </label>
-      <Popover>
-        <PopoverTrigger asChild className="p-0 border-0 w-full">
-          <Button variant="outline" className="w-full justify-between p-0 m-0">
-            <span className="text-[#262626] text-sm leading-5.25 font-geist truncate">
-              {eventName || "Choose company event"}
-            </span>
 
-            <ChevronDown className="w-4 h-4 opacity-70" />
-          </Button>
-        </PopoverTrigger>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full flex justify-between p-0 m-0 px-2"
+      >
+        <span className="text-[#262626] hover:text-gray-950 cursor-pointer text-sm truncate">
+          {eventName || "Choose company event"}
+        </span>
+        <ChevronDown className="w-4 h-4 opacity-70" />
+      </button>
 
-        {/* Dropdown */}
-        <PopoverContent
-          align="start"
-          sideOffset={8}
-          className="w-full rounded-2xl p-2  max-w-64"
+      {/* Dropdown */}
+      {open && (
+        <div
+          className="
+            absolute left-0 top-full mt-2 w-full bg-white rounded-2xl shadow-lg z-50
+          "
         >
-          <div className="space-y-1">
-            {/* Event List */}
+          <div className="">
+            <p className="text-gray-400 text-xs py-2 px-3">Switch event</p>
             {events.map((event) => (
               <button
                 key={event}
                 onClick={() => handleSelectEvent(event)}
-                className="
-                  w-full
-                  text-left
-                  px-3
-                  py-2.5
-                  rounded-xl
-                  text-sm
-                  hover:bg-gray-100
-                  transition-colors
-                "
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors border-b border-[#F5F5F5]"
               >
                 {event}
               </button>
             ))}
 
-            <div className="border-t my-2" />
-
-            <Button className="w-full rounded-xl">
-              <Plus className="w-4 h-4 mr-2" />
-              Create New Event
-            </Button>
+            <div className="px-3 py-2">
+              <button className="w-full rounded-xl text-[#5c24cc] text-sm font-semibold flex gap-2 items-center">
+                <Plus className="w-4 h-4" />
+                New Event
+              </button>
+            </div>
           </div>
-        </PopoverContent>
-      </Popover>
+        </div>
+      )}
     </div>
   );
 };

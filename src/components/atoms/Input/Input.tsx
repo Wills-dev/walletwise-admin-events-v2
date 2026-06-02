@@ -38,7 +38,7 @@ const Input = ({
     <div className="relative flex items-center backdrop-blur-2xl bg-white dark:bg-gray-800 rounded-[10px] border border-gray-200 dark:border-gray-700 dark:text-gray-400 transition-all focus-within:border-[#5c24cc] dark:focus-within:border-purple-700 duration-300 sm:h-11 h-10 p-1">
       {icon && icon}
       <input
-        style={{ fontSize: "16px" }}
+        style={{ fontSize: "14px" }}
         type={type}
         value={value}
         onChange={onChange}

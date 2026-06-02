@@ -1,6 +1,8 @@
 import CrownIcon from "@/components/atoms/icons/CrownIcon";
+import NavLink from "@/components/atoms/NavLink/NavLink";
 import EventDropdown from "@/components/molecules/EventDropdown/EventDropdown";
-import { X } from "lucide-react";
+
+import { Banknote, LayoutDashboard, Settings, Ticket, X } from "lucide-react";
 
 const Sidebar = ({
   isOpen,
@@ -12,6 +14,13 @@ const Sidebar = ({
   const currentUser = {
     companyName: "Ejanla-1",
   };
+
+  const sidebarLinks = [
+    { href: "/overview", title: "overview", icon: LayoutDashboard },
+    { href: "/tickets", title: "Tickets", icon: Ticket },
+    { href: "/revenue", title: "Revenue", icon: Banknote },
+    { href: "/settings", title: "Settings", icon: Settings },
+  ];
 
   return (
     <div
@@ -42,7 +51,16 @@ const Sidebar = ({
         </div>
         <div className="space-y-4">
           <EventDropdown />
-          <div className=""></div>
+          <ul className="space-y-1">
+            {sidebarLinks?.map((item) => (
+              <NavLink
+                key={item.href}
+                href={item.href}
+                title={item.title}
+                icon={item.icon}
+              />
+            ))}
+          </ul>
         </div>
       </div>
     </div>
