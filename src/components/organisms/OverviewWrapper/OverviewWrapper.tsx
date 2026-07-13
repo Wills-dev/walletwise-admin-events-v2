@@ -6,7 +6,7 @@ import DynamicTabs from "@/components/molecules/DynamicTabs/DynamicTabs";
 import { useTab } from "@/lib/hooks/useTab";
 
 const OverviewWrapper = () => {
-  const { tab, handleSwithTab } = useTab();
+  const { tab, handleSwitchTab } = useTab();
 
   const tabs = [
     {
@@ -28,7 +28,7 @@ const OverviewWrapper = () => {
       <DynamicTabs
         tabs={tabs}
         defaultTab={tab || defaultTab}
-        onClick={handleSwithTab}
+        onClick={handleSwitchTab}
         title="Overview"
       />
     </>

@@ -12,17 +12,22 @@ const CurrentEventSummary = () => {
   return (
     <SummaryCardWrapper variant="maxThree">
       <SummaryCard
-        title="Total Revenue"
-        value={"501k"}
+        title="Gross Revenue"
+        value={"4.5m"}
         currency="NGN"
         icon={ChartNoAxesColumnIncreasing}
       >
         <div className="flex items-center gap-1 text-green-500">
           <TrendingUp className="w-3.25 h-3.25" />
-          <span className="text-xs font-medium">+8.4% this month</span>
+          <span className="text-xs font-medium">+3.5% vs last periodh</span>
         </div>
       </SummaryCard>
-      <SummaryCard title="Total Tickets" value={"40"} icon={Ticket}>
+      <SummaryCard
+        title="Average Order Value"
+        value={"14,849.00"}
+        currency="NGN"
+        icon={Ticket}
+      >
         <div className="flex items-center gap-1 text-green-500">
           <TrendingUp className="w-3.25 h-3.25" />
           <span className="text-xs font-medium">+12% this month</span>

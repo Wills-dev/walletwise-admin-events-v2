@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+
 import { createAuthCookie, readAuthCookie } from "../helpers/cookie";
 
 export const useTableState = () => {
@@ -21,41 +22,97 @@ export const useTableState = () => {
   const [filter, setFilter] = useState<{ [key: number]: string }>({});
   const [status, setStatus] = useState(initialStatus);
   const [tab, setTab] = useState(initialTab);
-  const [submittedQuery, setSubmittedQuery] = useState<string | null>(null);
+  const [submittedQuery, setSubmittedQuery] = useState<string | null>(
+    initialSearch || null,
+  );
 
-  const handleSwithTab = (tab: string) => {
-    setTab(tab);
-    setCurrentPage(1);
+  const updateParams = (
+    updates: Record<string, string | number | null | undefined>,
+  ) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === "" || !value) {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    });
+
+    const nextQuery = params.toString();
+
+    if (nextQuery !== searchParams.toString()) {
+      router.replace(`?${nextQuery}`, { scroll: false });
+    }
   };
 
-  const handleSortChange = (values: { [key: number]: string }): void => {
+  const handleSwitchTab = (newTab: string) => {
+    setTab(newTab);
+    setCurrentPage(1);
+
+    updateParams({
+      tab: newTab,
+      page: 1,
+    });
+  };
+
+  const handleSortChange = (values: { [key: number]: string }) => {
     setFilter(values);
     setCurrentPage(1);
+
+    updateParams({
+      page: 1,
+    });
   };
 
-  const handleStatusChange = (status: string) => {
-    setStatus(status);
+  const handleStatusChange = (newStatus: string) => {
+    setStatus(newStatus);
     setCurrentPage(1);
+
+    updateParams({
+      status: newStatus,
+      page: 1,
+    });
   };
 
   const nextPage = (totalPages: number) => {
     if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
+      const page = currentPage + 1;
+
+      setCurrentPage(page);
+
+      updateParams({
+        page,
+      });
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+      const page = currentPage - 1;
+
+      setCurrentPage(page);
+
+      updateParams({
+        page,
+      });
     }
   };
 
   const goToLastPage = (totalPages: number) => {
     setCurrentPage(totalPages);
+
+    updateParams({
+      page: totalPages,
+    });
   };
 
   const goToFirstPage = () => {
     setCurrentPage(1);
+
+    updateParams({
+      page: 1,
+    });
   };
 
   const isLastPage = (totalPages: number) => {
@@ -73,63 +130,65 @@ export const useTableState = () => {
   const handleClear = () => {
     setSearch("");
     setSubmittedQuery(null);
+    setCurrentPage(1);
+
+    updateParams({
+      search: null,
+      page: 1,
+    });
   };
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     setCurrentPage(1);
     setSubmittedQuery(search);
+
+    updateParams({
+      search,
+      page: 1,
+    });
   };
 
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
     setCurrentPage(1);
-    createAuthCookie("limit", newLimit.toString());
+
+    createAuthCookie("limit", String(newLimit));
+
+    updateParams({
+      limit: newLimit,
+      page: 1,
+    });
   };
-
-  const updateUrl = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    params.set("page", String(currentPage));
-    params.set("limit", String(limit));
-
-    if (tab) params.set("tab", tab);
-    else params.delete("tab");
-
-    if (search) params.set("search", search);
-    else params.delete("search");
-
-    if (status) params.set("status", status);
-    else params.delete("status");
-
-    router.replace(`?${params.toString()}`);
-  }, [router, search, searchParams, limit, currentPage, status, tab]);
-
-  useEffect(() => {
-    updateUrl();
-  }, [updateUrl]);
 
   return {
     currentPage,
     limit,
     setLimit: handleLimitChange,
+
     nextPage,
     prevPage,
     goToFirstPage,
     goToLastPage,
+
     isFirstPage,
     isLastPage,
+
     search,
     handleSearchChange,
     handleClear,
     submittedQuery,
     handleSearch,
+
     setFilter,
     filter,
+
     status,
-    handleSwithTab,
-    tab,
-    handleSortChange,
     handleStatusChange,
+
+    tab,
+    handleSwitchTab,
+
+    handleSortChange,
     setCurrentPage,
   };
 };

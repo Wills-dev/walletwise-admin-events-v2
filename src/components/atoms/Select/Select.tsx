@@ -25,7 +25,7 @@ const Select = ({
     secondary: {
       div: "relative w-fit flex items-center rounded-lg border border-[#F5F5F5] transition-all focus-within:border-black/20 duration-300 h-10 px-3 bg-[#00000005]",
       select:
-        "w-full bg-inherit h-full placeholder:text-[#A1A1A1] text-sm font-medium text-[#A1A1A1] outline-none",
+        "w-full bg-[#00000005] h-full placeholder:text-[#A1A1A1] text-sm font-medium text-[#A1A1A1] outline-none",
     },
   };
 
