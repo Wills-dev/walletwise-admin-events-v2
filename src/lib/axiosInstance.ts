@@ -14,7 +14,7 @@ export const axiosInstance = axios.create({
 //set the Auth token for any request
 axiosInstance.interceptors.request.use(
   function (config) {
-    const token = readAuthCookie("eventToken");
+    const token = readAuthCookie("walletwiseEventAdminToken");
     config.headers.Authorization = token ? `Bearer ${token}` : "";
     return config;
   },

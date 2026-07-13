@@ -59,3 +59,23 @@ export interface optionsType {
   label: string;
   value: string;
 }
+
+export interface User {
+  uniqueId: string;
+  _id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  countryCode?: string;
+  mobile?: string;
+  languages?: string[];
+  houseAddress?: string;
+  state?: string;
+  city?: string;
+  country?: string;
+  bio?: string;
+  image?: string;
+  profileComplete: boolean;
+  emailVerified: boolean;
+  role: "user";
+}

@@ -8,9 +8,13 @@ import { login } from "../api";
 import { ApiErrorResponse } from "@/lib/types";
 import { useLoginState } from "./useLoginState";
 import { promiseErrorFunction } from "@/lib/types";
+import { useAuthStore } from "@/store/authStore";
+import { createAuthCookie } from "../helpers/cookie";
 
 export const useLogin = () => {
   const router = useRouter();
+
+  const setCurrentUser = useAuthStore((state) => state.setCurrentUser);
 
   const {
     showPassword,
@@ -23,9 +27,15 @@ export const useLogin = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
+      console.log("data", data);
+      const { data: adminDetails, accessToken } = data;
+
+      console.log("accessToken", accessToken);
+      createAuthCookie("walletwiseEventAdminToken", accessToken);
+      setCurrentUser(adminDetails);
+      toast.success("Login success");
+      router.push(`/overview`);
       resetForm();
-      toast.success("Please enter OTP to continue");
-      router.push(`/verify?adminId=${data?.adminId}`);
     },
     onError: (error: ApiErrorResponse) => {
       console.log("error logging in", error);
