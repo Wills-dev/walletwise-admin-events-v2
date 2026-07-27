@@ -27,12 +27,9 @@ export const useLogin = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      console.log("data", data);
-      const { data: adminDetails, accessToken } = data;
-
-      console.log("accessToken", accessToken);
-      createAuthCookie("walletwiseEventAdminToken", accessToken);
-      setCurrentUser(adminDetails);
+      const { partner, token } = data;
+      createAuthCookie("walletwiseEventAdminToken", token);
+      setCurrentUser(partner);
       toast.success("Login success");
       router.push(`/overview`);
       resetForm();

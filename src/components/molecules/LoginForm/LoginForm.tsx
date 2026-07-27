@@ -3,6 +3,7 @@
 import Button from "@/components/atoms/Button/Button";
 import Input from "@/components/atoms/Input/Input";
 import Label from "@/components/atoms/Label/Label";
+import Link from "next/link";
 
 import { areAllFieldsFilled } from "@/lib/helpers/areAllFieldsFilled";
 import { useLogin } from "@/lib/hooks/useLogin";
@@ -42,6 +43,14 @@ const LoginForm = () => {
           onTogglePassword={togglePasswordVisibility}
           placeholder="Enter password"
         />
+        <div className="flex justify-end pt-1">
+          <Link
+            href="/forgot-password"
+            className="text-sm font-medium text-[#5A27CC] transition-colors hover:text-purple-700"
+          >
+            Forgot password?
+          </Link>
+        </div>
       </div>
       <Button type="submit" loading={isPending} disabled={!isFormFilled}>
         Login
