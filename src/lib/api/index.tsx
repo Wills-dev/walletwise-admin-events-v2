@@ -8,7 +8,7 @@ export const login = async ({
   password: string;
 }) => {
   try {
-    const { data } = await axiosInstance.post("/login", {
+    const { data } = await axiosInstance.post("/partner/login", {
       email,
       password,
     });
@@ -16,6 +16,29 @@ export const login = async ({
   } catch (error) {
     throw error;
   }
+};
+
+export const forgotPassword = async (email: string) => {
+  const { data } = await axiosInstance.post("/partner/forgot-password", {
+    email,
+  });
+
+  return data;
+};
+
+export const resetPassword = async ({
+  token,
+  newPassword,
+}: {
+  token: string;
+  newPassword: string;
+}) => {
+  const { data } = await axiosInstance.post("/partner/reset-password", {
+    token,
+    newPassword,
+  });
+
+  return data;
 };
 
 export const verifyLogin = async ({
