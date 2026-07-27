@@ -1,15 +1,26 @@
 import { axiosInstance } from "../axiosInstance";
 import { EventPayload } from "../types/events";
 
+export const getPartnerEventAnalytics = async (): Promise<unknown> => {
+  try {
+    const { data } = await axiosInstance.get("/partner-event");
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createEvent = async ({
   buildPayload,
-  imageFile,
+  thumbnail,
+  banner,
 }: {
-  imageFile: File;
+  thumbnail: File;
+  banner: File | null;
   buildPayload: EventPayload;
 }) => {
   try {
-    const url = ``;
+    const url = `/partner-event/create`;
 
     const formData = new FormData();
 
@@ -19,20 +30,21 @@ export const createEvent = async ({
     formData.append("address", buildPayload.address);
     formData.append("date", buildPayload.date);
     formData.append("time", buildPayload.time);
-    formData.append("endTime", buildPayload.endTime);
-    formData.append("serviceFee", String(buildPayload.serviceFee));
-    formData.append("refundPolicy", buildPayload.refundPolicy);
+    formData.append("end_time", buildPayload.end_time);
+    formData.append("service_fee", String(buildPayload.service_fee));
+    formData.append("refund_policy", buildPayload.refund_policy);
 
-    formData.append("ticketTypes", JSON.stringify(buildPayload.ticketTypes));
+    formData.append("ticket_types", JSON.stringify(buildPayload.ticket_types));
+    formData.append("thumbnail", thumbnail, thumbnail.name);
 
-    if (imageFile) {
-      formData.append("image", imageFile, imageFile.name);
+    if (banner) {
+      formData.append("banner", banner, banner.name);
     }
 
-    if (buildPayload.formSettings) {
+    if (buildPayload.form_settings) {
       formData.append(
-        "formSettings",
-        JSON.stringify(buildPayload.formSettings),
+        "form_settings",
+        JSON.stringify(buildPayload.form_settings),
       );
     }
 

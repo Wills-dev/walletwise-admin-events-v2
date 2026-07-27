@@ -1,9 +1,13 @@
-export type EventCategory =
-  | "beauty_pageant"
-  | "concert"
-  | "conference"
-  | "sports"
-  | "religion";
+export const EVENT_CATEGORIES = [
+  "Concert",
+  "Beauty Pageant",
+  "Sports",
+  "Conference",
+  "Religion",
+  "Others",
+] as const;
+
+export type EventCategory = (typeof EVENT_CATEGORIES)[number];
 
 export interface TicketType {
   name: string;
@@ -12,11 +16,17 @@ export interface TicketType {
   confirmed: boolean;
 }
 
-export type TicketTypePayload = Omit<TicketType, "confirmed" | "name">;
+export interface TicketTypePayload {
+  type: string;
+  price: number;
+  capacity: number;
+}
+
+export type CustomInputType = "Text" | "Number" | "Date";
 
 export interface CustomField {
   name: string;
-  type: "Text" | "Number" | "Date" | "Select";
+  type: CustomInputType;
   required: boolean;
   confirmed: boolean;
 }
@@ -30,42 +40,50 @@ export interface DefaultFieldMeta {
 export type DefaultFieldKey = "fullName" | "dob" | "stateOfOrigin";
 export type DefaultFields = Record<DefaultFieldKey, DefaultFieldMeta>;
 
-export type DefaultFieldsPayload = Record<DefaultFieldKey, boolean>;
-
-export type CustomFieldPayload = Omit<CustomField, "confirmed">;
+export interface CustomFieldPayload {
+  field_name: string;
+  input_type: Lowercase<CustomInputType>;
+  is_required: boolean;
+}
 
 export interface FormSettings {
   defaultFields: DefaultFields;
   customFields: CustomField[];
 }
 
+export interface FormSettingsPayload {
+  full_name: { input_type: "text"; is_required: boolean };
+  date_of_birth: { input_type: "date"; is_required: boolean };
+  state_of_origin: { input_type: "text"; is_required: boolean };
+  custom_fields: CustomFieldPayload[];
+}
+
 export interface EventPayload {
   title: string;
   description: string;
   category: EventCategory;
-  address: string;
   date: string;
   time: string;
-  endTime: string;
-  serviceFee: number;
-  refundPolicy: string;
-  ticketTypes: Record<string, TicketTypePayload>;
-  formSettings: {
-    defaultFields: DefaultFieldsPayload;
-    customFields: CustomFieldPayload[];
-  } | null;
+  end_time: string;
+  address: string;
+  service_fee: number;
+  refund_policy: string;
+  ticket_types: TicketTypePayload[];
+  form_settings?: FormSettingsPayload;
 }
 
 export interface EventFormState {
   title: string;
   description: string;
-  category: EventCategory;
+  category: EventCategory | "";
   address: string;
   date: string;
   time: string;
   endTime: string;
-  imageFile: File | null;
-  imagePreview: string | null;
+  thumbnailFile: File | null;
+  thumbnailPreview: string | null;
+  bannerFile: File | null;
+  bannerPreview: string | null;
   serviceFee: number;
   refundPolicy: string;
   ticketTypes: Record<string, TicketType>;

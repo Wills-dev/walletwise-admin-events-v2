@@ -1,17 +1,45 @@
 import { EventFormState } from "../types/events";
+import { getLocalDate } from "./getLocalDate";
 
 export type ValidationErrors = Partial<Record<string, string>>;
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const SUPPORTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function validateEventForm(state: EventFormState): ValidationErrors {
   const errors: ValidationErrors = {};
 
   if (!state.title.trim()) errors.title = "Event title is required";
   if (!state.description.trim()) errors.description = "Description is required";
+  if (!state.category) errors.category = "Category is required";
   if (!state.address.trim()) errors.address = "Address is required";
-  if (!state.date) errors.date = "Date is required";
+  if (!state.date) {
+    errors.date = "Date is required";
+  } else if (state.date < getLocalDate()) {
+    errors.date = "Event date cannot be in the past";
+  }
   if (!state.time) errors.time = "Start time is required";
-  if (!state.endTime) errors.endTime = "End time is required";
-  if (!state.imageFile) errors.imageFile = "Event image is required";
+  if (!state.endTime) {
+    errors.endTime = "End time is required";
+  } else if (state.time && state.endTime <= state.time) {
+    errors.endTime = "End time must be later than start time";
+  }
+  if (!state.thumbnailFile) {
+    errors.thumbnailFile = "Thumbnail image is required";
+  } else if (!SUPPORTED_IMAGE_TYPES.includes(state.thumbnailFile.type)) {
+    errors.thumbnailFile = "Thumbnail must be a JPG, PNG, or WEBP image";
+  } else if (state.thumbnailFile.size > MAX_IMAGE_SIZE) {
+    errors.thumbnailFile = "Thumbnail must not exceed 10 MB";
+  }
+
+  if (
+    state.bannerFile &&
+    !SUPPORTED_IMAGE_TYPES.includes(state.bannerFile.type)
+  ) {
+    errors.bannerFile = "Event page image must be a JPG, PNG, or WEBP image";
+  } else if (state.bannerFile && state.bannerFile.size > MAX_IMAGE_SIZE) {
+    errors.bannerFile = "Event page image must not exceed 10 MB";
+  }
 
   const confirmedTickets = Object.entries(state.ticketTypes).filter(
     ([, t]) => t.confirmed,
@@ -40,7 +68,7 @@ export function validateEventForm(state: EventFormState): ValidationErrors {
       "Some ticket types haven't been confirmed. Click 'Add' to confirm or remove them.";
   }
 
-  if (state.category === "beauty_pageant" && state.formSettings) {
+  if (state.category === "Beauty Pageant" && state.formSettings) {
     const unconfirmedFields = state.formSettings.customFields.filter(
       (f) => !f.confirmed,
     );
