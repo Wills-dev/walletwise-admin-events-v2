@@ -12,6 +12,7 @@ interface InputProps {
   showPassword?: "text" | "password";
   onTogglePassword?: () => void;
   disable?: boolean;
+  min?: string;
 }
 
 const Input = ({
@@ -24,6 +25,7 @@ const Input = ({
   icon,
   name,
   disable = false,
+  min,
 }: InputProps) => {
   const paddingX =
     icon !== undefined && showPassword !== undefined
@@ -43,6 +45,7 @@ const Input = ({
         value={value}
         onChange={onChange}
         name={name}
+        min={min}
         disabled={disable}
         className={`w-full bg-inherit h-full placeholder-gray-400 dark:placeholder-gray-600 outline-none ${paddingX}`}
         placeholder={placeholder}

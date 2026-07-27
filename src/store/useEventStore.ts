@@ -1,7 +1,6 @@
 import {
   CustomField,
   DefaultFields,
-  DefaultFieldsPayload,
   EventCategory,
   EventFormState,
   EventPayload,
@@ -13,8 +12,10 @@ import { create } from "zustand";
 interface EventActions {
   handleChange: (field: keyof EventFormState, value: string | number) => void;
 
-  handleImageChange: (file: File | null) => void;
-  clearImage: () => void;
+  handleThumbnailChange: (file: File | null) => void;
+  clearThumbnail: () => void;
+  handleBannerChange: (file: File | null) => void;
+  clearBanner: () => void;
 
   handleCategoryChange: (category: EventCategory) => void;
 
@@ -69,13 +70,15 @@ const defaultFormSettings: FormSettings = {
 const initialState: EventFormState = {
   title: "",
   description: "",
-  category: "beauty_pageant",
+  category: "",
   address: "",
   date: "",
   time: "",
   endTime: "",
-  imageFile: null,
-  imagePreview: null,
+  thumbnailFile: null,
+  thumbnailPreview: null,
+  bannerFile: null,
+  bannerPreview: null,
   serviceFee: 0,
   refundPolicy: "",
   ticketTypes: {
@@ -92,24 +95,40 @@ export const useEventStore = create<EventFormState & EventActions>(
       set({ [field]: value } as Partial<EventFormState>);
     },
 
-    handleImageChange: (file) => {
+    handleThumbnailChange: (file) => {
       if (!file) return;
 
-      const prev = get().imagePreview;
+      const prev = get().thumbnailPreview;
       if (prev) URL.revokeObjectURL(prev);
 
       const preview = URL.createObjectURL(file);
-      set({ imageFile: file, imagePreview: preview });
+      set({ thumbnailFile: file, thumbnailPreview: preview });
     },
 
-    clearImage: () => {
-      const prev = get().imagePreview;
+    clearThumbnail: () => {
+      const prev = get().thumbnailPreview;
       if (prev) URL.revokeObjectURL(prev);
-      set({ imageFile: null, imagePreview: null });
+      set({ thumbnailFile: null, thumbnailPreview: null });
+    },
+
+    handleBannerChange: (file) => {
+      if (!file) return;
+
+      const prev = get().bannerPreview;
+      if (prev) URL.revokeObjectURL(prev);
+
+      const preview = URL.createObjectURL(file);
+      set({ bannerFile: file, bannerPreview: preview });
+    },
+
+    clearBanner: () => {
+      const prev = get().bannerPreview;
+      if (prev) URL.revokeObjectURL(prev);
+      set({ bannerFile: null, bannerPreview: null });
     },
 
     handleCategoryChange: (category) => {
-      const isPageant = category === "beauty_pageant";
+      const isPageant = category === "Beauty Pageant";
 
       set({
         category,
@@ -281,47 +300,72 @@ export const useEventStore = create<EventFormState & EventActions>(
     buildPayload: () => {
       const state = get();
 
-      let formSettings = null;
-      if (state.formSettings) {
-        const strippedDefaultFields = Object.fromEntries(
-          Object.entries(state.formSettings.defaultFields).map(
-            ([key, meta]) => [key, meta.value],
-          ),
-        ) as DefaultFieldsPayload;
-
-        formSettings = {
-          defaultFields: strippedDefaultFields,
-          customFields: state.formSettings.customFields
-            .filter((f) => f.confirmed)
-            .map(({ confirmed, ...rest }) => rest),
-        };
-      }
+      const formSettings =
+        state.category === "Beauty Pageant" && state.formSettings
+          ? {
+              full_name: {
+                input_type: "text" as const,
+                is_required:
+                  state.formSettings.defaultFields.fullName.value,
+              },
+              date_of_birth: {
+                input_type: "date" as const,
+                is_required: state.formSettings.defaultFields.dob.value,
+              },
+              state_of_origin: {
+                input_type: "text" as const,
+                is_required:
+                  state.formSettings.defaultFields.stateOfOrigin.value,
+              },
+              custom_fields: state.formSettings.customFields
+                .filter((f) => f.confirmed)
+                .map((field) => ({
+                  field_name: field.name,
+                  input_type: field.type.toLowerCase() as Lowercase<
+                    typeof field.type
+                  >,
+                  is_required: field.required,
+                })),
+            }
+          : undefined;
 
       return {
         title: state.title,
         description: state.description,
-        category: state.category,
+        category: state.category as EventCategory,
         address: state.address,
         date: state.date,
         time: state.time,
-        endTime: state.endTime,
-        serviceFee: state.serviceFee,
-        refundPolicy: state.refundPolicy,
-        ticketTypes: Object.fromEntries(
-          Object.entries(state.ticketTypes)
-            .filter(([, t]) => t.confirmed)
-            .map(([key, { confirmed, name, ...rest }]) => [
-              key,
-              {
-                name,
-                ...rest,
-              },
-            ]),
-        ),
-        formSettings,
+        end_time: state.endTime,
+        service_fee: state.serviceFee,
+        refund_policy: state.refundPolicy,
+        ticket_types: Object.entries(state.ticketTypes)
+          .filter(([, ticket]) => ticket.confirmed)
+          .map(([, ticket]) => ({
+            type: ticket.name,
+            price: Number(ticket.price),
+            capacity: ticket.quantity,
+          })),
+        ...(formSettings && { form_settings: formSettings }),
       };
     },
 
-    resetForm: () => set(initialState),
+    resetForm: () => {
+      const state = get();
+      if (state.thumbnailPreview) URL.revokeObjectURL(state.thumbnailPreview);
+      if (state.bannerPreview) URL.revokeObjectURL(state.bannerPreview);
+      set({
+        ...initialState,
+        ticketTypes: {
+          regular: {
+            name: "Regular",
+            price: "",
+            quantity: 0,
+            confirmed: false,
+          },
+        },
+        formSettings: { ...defaultFormSettings, customFields: [] },
+      });
+    },
   }),
 );
