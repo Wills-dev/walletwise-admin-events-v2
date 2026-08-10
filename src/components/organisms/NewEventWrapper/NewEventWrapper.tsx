@@ -16,6 +16,8 @@ import EventImageGuide from "@/components/molecules/EventImageGuide/EventImageGu
 import EventImageUpload from "@/components/molecules/EventImageUpload/EventImageUpload";
 import EventSubmissionSuccess from "@/components/molecules/EventSubmissionSuccess/EventSubmissionSuccess";
 import TicketFormCard from "@/components/molecules/TicketFormCard/TicketFormCard";
+import HeadlinerFields from "@/components/molecules/HeadlinerFields/HeadlinerFields";
+import PrizeFields from "@/components/molecules/PrizeFields/PrizeFields";
 
 const categoryOptions = EVENT_CATEGORIES.map((category) => ({
   label: category,
@@ -131,6 +133,10 @@ const NewEventWrapper = () => {
             onClear={clearBanner}
           />
         </section>
+
+        <HeadlinerFields />
+
+        {category === "Beauty Pageant" && <PrizeFields />}
 
         {category === "Beauty Pageant" && formSettings && (
           <section className="space-y-4">

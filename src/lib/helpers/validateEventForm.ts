@@ -78,5 +78,45 @@ export function validateEventForm(state: EventFormState): ValidationErrors {
     }
   }
 
+  state.headliners.forEach((headliner, index) => {
+    if (!headliner.artistName.trim()) {
+      errors[`headliner_${index}_name`] =
+        `Headliner ${index + 1} must have an artist name`;
+    }
+    if (!headliner.imageFile) {
+      errors[`headliner_${index}_image`] =
+        `Headliner ${index + 1} must have a matching image`;
+    } else if (!SUPPORTED_IMAGE_TYPES.includes(headliner.imageFile.type)) {
+      errors[`headliner_${index}_image`] =
+        `Headliner ${index + 1} image must be JPG, PNG, or WEBP`;
+    } else if (headliner.imageFile.size > MAX_IMAGE_SIZE) {
+      errors[`headliner_${index}_image`] =
+        `Headliner ${index + 1} image must not exceed 10 MB`;
+    }
+  });
+
+  if (state.category === "Beauty Pageant") {
+    state.prizes.forEach((prize, index) => {
+      if (!prize.name.trim()) {
+        errors[`prize_${index}_name`] =
+          `Prize ${index + 1} must have a name`;
+      }
+      if (!prize.description.trim()) {
+        errors[`prize_${index}_description`] =
+          `Prize ${index + 1} must have a description`;
+      }
+      if (!prize.imageFile) {
+        errors[`prize_${index}_image`] =
+          `Prize ${index + 1} must have a matching image`;
+      } else if (!SUPPORTED_IMAGE_TYPES.includes(prize.imageFile.type)) {
+        errors[`prize_${index}_image`] =
+          `Prize ${index + 1} image must be JPG, PNG, or WEBP`;
+      } else if (prize.imageFile.size > MAX_IMAGE_SIZE) {
+        errors[`prize_${index}_image`] =
+          `Prize ${index + 1} image must not exceed 10 MB`;
+      }
+    });
+  }
+
   return errors;
 }

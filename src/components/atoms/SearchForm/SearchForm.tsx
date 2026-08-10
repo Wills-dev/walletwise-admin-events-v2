@@ -1,19 +1,30 @@
 import { Search } from "lucide-react";
 
-const SearchForm = () => {
+interface SearchFormProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const SearchForm = ({ value, onChange }: SearchFormProps) => {
   return (
-    <form className="flex-1 w-full h-10- rounded-[12px] py-2 px-3 flex gap-2 items-center border border-[#F5F5F5] bg-[#00000005]">
-      <button className="text-[#A1A1A1] cursor-pointer">
-        <Search className="w-5 h-5" />
-      </button>
+    <div
+      className="flex h-10 w-full flex-1 items-center gap-2 rounded-[12px] border border-[#F5F5F5] bg-[#00000005] px-3 py-2"
+      role="search"
+    >
+      <Search className="h-5 w-5 text-[#A1A1A1]" aria-hidden="true" />
+      <label htmlFor="ticket-search" className="sr-only">
+        Search tickets
+      </label>
       <input
         type="search"
-        name=""
-        id=""
-        className="h-full flex-1 w-full placeholder:text-[#A1A1A1] text-sm font-medium"
-        placeholder="Search by name, email, ID"
+        name="ticket-search"
+        id="ticket-search"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-full w-full flex-1 text-sm font-medium outline-none placeholder:text-[#A1A1A1]"
+        placeholder="Search by name, email, ID or ticket type"
       />
-    </form>
+    </div>
   );
 };
 

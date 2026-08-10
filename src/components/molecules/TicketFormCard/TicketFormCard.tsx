@@ -62,7 +62,6 @@ const TicketFormCard = ({ ticketKey }: { ticketKey: string }) => {
           name="name"
           placeholder="Ticket name (e.g. VIP)"
           value={ticket.name}
-          disable={isRegular}
           onChange={(e) =>
             handleTicketChange(ticketKey, "name", e.target.value)
           }

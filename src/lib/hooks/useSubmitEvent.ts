@@ -63,6 +63,11 @@ export const useSubmitEvent = () => {
     mutate({
       thumbnail: state.thumbnailFile,
       banner: state.bannerFile,
+      headlinerImages: state.headliners.map((item) => item.imageFile as File),
+      prizeImages:
+        state.category === "Beauty Pageant"
+          ? state.prizes.map((item) => item.imageFile as File)
+          : [],
       buildPayload: buildPayload(),
     });
   };

@@ -2,33 +2,46 @@ import { ArrowUpDown } from "lucide-react";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
+import { numberWithCommas } from "@/lib/helpers/formatNumbers";
+import type { PartnerTicketRow } from "@/lib/types/tickets";
 
-export interface TicketType {
-  id: string;
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  regular: number;
-  vip: number;
-}
+const columnHelper = createColumnHelper<PartnerTicketRow>();
+const ticketDateFormatter = new Intl.DateTimeFormat("en-NG", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Africa/Lagos",
+});
 
-const columnHelper = createColumnHelper<TicketType>();
+const fallbackText = (value: string | null) => value?.trim() || "—";
+
+const formatTicketDate = (date: string) => {
+  const parsedDate = new Date(date);
+
+  return Number.isNaN(parsedDate.getTime())
+    ? date || "—"
+    : ticketDateFormatter.format(parsedDate);
+};
 
 export const Column = [
-  columnHelper.accessor("id", {
-    header: "ID",
+  columnHelper.accessor("transactionId", {
+    header: "Transaction ID",
+    cell: ({ getValue }) => `#${getValue()}`,
   }),
 
-  columnHelper.accessor("fullName", {
+  columnHelper.accessor("name", {
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Full Name
+        Name
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+    cell: ({ getValue }) => fallbackText(getValue()),
   }),
 
   columnHelper.accessor("email", {
@@ -41,33 +54,47 @@ export const Column = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
+    cell: ({ getValue }) => fallbackText(getValue()),
   }),
 
-  columnHelper.accessor("phoneNumber", {
+  columnHelper.accessor("phone", {
     header: "Phone Number",
+    cell: ({ getValue }) => fallbackText(getValue()),
   }),
 
-  columnHelper.accessor("regular", {
+  columnHelper.accessor("ticketType", {
+    header: "Ticket Type",
+    cell: ({ getValue }) => (
+      <span className="inline-flex rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-medium text-[#5A27CC]">
+        {getValue()?.trim() || "Unspecified"}
+      </span>
+    ),
+  }),
+
+  columnHelper.accessor("count", {
+    header: "Quantity",
+    cell: ({ getValue }) => numberWithCommas(getValue()),
+  }),
+
+  columnHelper.accessor("totalAmount", {
+    header: "Total Amount",
+    cell: ({ getValue }) => {
+      const amount = getValue();
+
+      return amount === null ? "—" : `₦${numberWithCommas(amount)}`;
+    },
+  }),
+
+  columnHelper.accessor("date", {
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Regular
+        Date
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-  }),
-
-  columnHelper.accessor("vip", {
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        VIP
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    cell: ({ getValue }) => formatTicketDate(getValue()),
   }),
 ];

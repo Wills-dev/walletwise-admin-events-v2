@@ -8,8 +8,8 @@ const SummaryCardWrapper = ({
   children: React.ReactNode;
 }) => {
   const variants = {
-    maxFour: "xl:grid-cols-4 lg:grid-cols-3 sm: grid-cols-2 grid-cols-1 gap-4",
-    maxThree: "lg:grid-cols-3 sm: grid-cols-2 grid-cols-1 gap-4",
+    maxFour: "grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+    maxThree: "grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
   };
 
   const styles = variants[variant];

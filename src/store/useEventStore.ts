@@ -5,6 +5,8 @@ import {
   EventFormState,
   EventPayload,
   FormSettings,
+  Headliner,
+  Prize,
   TicketType,
 } from "@/lib/types/events";
 import { create } from "zustand";
@@ -28,6 +30,20 @@ interface EventActions {
   confirmTicketType: (tempKey: string) => void;
   editTicketType: (key: string) => void;
   removeTicketType: (ticketKey: string) => void;
+
+  addHeadliner: () => void;
+  updateHeadliner: (index: number, artistName: string) => void;
+  setHeadlinerImage: (index: number, file: File | null) => void;
+  removeHeadliner: (index: number) => void;
+
+  addPrize: () => void;
+  updatePrize: (
+    index: number,
+    field: "name" | "description",
+    value: string,
+  ) => void;
+  setPrizeImage: (index: number, file: File | null) => void;
+  removePrize: (index: number) => void;
 
   handleDefaultFieldToggle: (field: keyof DefaultFields) => void;
   addCustomField: () => void;
@@ -84,7 +100,22 @@ const initialState: EventFormState = {
   ticketTypes: {
     regular: { name: "Regular", price: "", quantity: 0, confirmed: false },
   },
+  headliners: [],
+  prizes: [],
   formSettings: { ...defaultFormSettings, customFields: [] },
+};
+
+const replaceImage = <T extends Headliner | Prize>(
+  item: T,
+  file: File | null,
+): T => {
+  if (item.imagePreview) URL.revokeObjectURL(item.imagePreview);
+
+  return {
+    ...item,
+    imageFile: file,
+    imagePreview: file ? URL.createObjectURL(file) : null,
+  };
 };
 
 export const useEventStore = create<EventFormState & EventActions>(
@@ -196,6 +227,82 @@ export const useEventStore = create<EventFormState & EventActions>(
         const updated = { ...state.ticketTypes };
         delete updated[ticketKey];
         return { ticketTypes: updated };
+      });
+    },
+
+    addHeadliner: () => {
+      set((state) => ({
+        headliners: [
+          ...state.headliners,
+          { artistName: "", imageFile: null, imagePreview: null },
+        ],
+      }));
+    },
+
+    updateHeadliner: (index, artistName) => {
+      set((state) => ({
+        headliners: state.headliners.map((headliner, currentIndex) =>
+          currentIndex === index ? { ...headliner, artistName } : headliner,
+        ),
+      }));
+    },
+
+    setHeadlinerImage: (index, file) => {
+      set((state) => ({
+        headliners: state.headliners.map((headliner, currentIndex) =>
+          currentIndex === index
+            ? replaceImage(headliner, file)
+            : headliner,
+        ),
+      }));
+    },
+
+    removeHeadliner: (index) => {
+      set((state) => {
+        const removed = state.headliners[index];
+        if (removed?.imagePreview) URL.revokeObjectURL(removed.imagePreview);
+        return {
+          headliners: state.headliners.filter((_, currentIndex) =>
+            currentIndex !== index
+          ),
+        };
+      });
+    },
+
+    addPrize: () => {
+      set((state) => ({
+        prizes: [
+          ...state.prizes,
+          { name: "", description: "", imageFile: null, imagePreview: null },
+        ],
+      }));
+    },
+
+    updatePrize: (index, field, value) => {
+      set((state) => ({
+        prizes: state.prizes.map((prize, currentIndex) =>
+          currentIndex === index ? { ...prize, [field]: value } : prize,
+        ),
+      }));
+    },
+
+    setPrizeImage: (index, file) => {
+      set((state) => ({
+        prizes: state.prizes.map((prize, currentIndex) =>
+          currentIndex === index ? replaceImage(prize, file) : prize,
+        ),
+      }));
+    },
+
+    removePrize: (index) => {
+      set((state) => {
+        const removed = state.prizes[index];
+        if (removed?.imagePreview) URL.revokeObjectURL(removed.imagePreview);
+        return {
+          prizes: state.prizes.filter((_, currentIndex) =>
+            currentIndex !== index
+          ),
+        };
       });
     },
 
@@ -321,9 +428,10 @@ export const useEventStore = create<EventFormState & EventActions>(
                 .filter((f) => f.confirmed)
                 .map((field) => ({
                   field_name: field.name,
-                  input_type: field.type.toLowerCase() as Lowercase<
-                    typeof field.type
-                  >,
+                  input_type:
+                    field.type === "Image"
+                      ? ("file" as const)
+                      : (field.type.toLowerCase() as "text" | "number" | "date"),
                   is_required: field.required,
                 })),
             }
@@ -346,6 +454,17 @@ export const useEventStore = create<EventFormState & EventActions>(
             price: Number(ticket.price),
             capacity: ticket.quantity,
           })),
+        ...(state.headliners.length > 0 && {
+          headliner: state.headliners.map((headliner) => ({
+            artist_name: headliner.artistName,
+          })),
+        }),
+        ...(state.category === "Beauty Pageant" && state.prizes.length > 0 && {
+          prizes: state.prizes.map((prize) => ({
+            name: prize.name,
+            description: prize.description,
+          })),
+        }),
         ...(formSettings && { form_settings: formSettings }),
       };
     },
@@ -354,6 +473,12 @@ export const useEventStore = create<EventFormState & EventActions>(
       const state = get();
       if (state.thumbnailPreview) URL.revokeObjectURL(state.thumbnailPreview);
       if (state.bannerPreview) URL.revokeObjectURL(state.bannerPreview);
+      state.headliners.forEach((item) => {
+        if (item.imagePreview) URL.revokeObjectURL(item.imagePreview);
+      });
+      state.prizes.forEach((item) => {
+        if (item.imagePreview) URL.revokeObjectURL(item.imagePreview);
+      });
       set({
         ...initialState,
         ticketTypes: {

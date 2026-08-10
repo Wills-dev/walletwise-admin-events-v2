@@ -93,6 +93,7 @@ const CustomFieldRow = ({ index }: { index: number }) => {
           <option value="Text">Text</option>
           <option value="Number">Number</option>
           <option value="Date">Date</option>
+          <option value="Image">Image</option>
         </select>
       </div>
 

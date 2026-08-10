@@ -1,58 +1,31 @@
-"use client";
-
 import Select from "@/components/atoms/Select/Select";
-import { useState } from "react";
 
-const SelectWrapper = () => {
-  const [isSelect, setIsSelect] = useState("");
+interface SelectWrapperProps {
+  ticketTypes: string[];
+  value: string;
+  onChange: (value: string) => void;
+}
 
-  const eventStatus = [
-    {
-      label: "Ongoing",
-      value: "ongoing",
-    },
-    {
-      label: "Upcoming",
-      value: "upcoming",
-    },
-    {
-      label: "Completed",
-      value: "completed",
-    },
-  ];
-
-  const ticketType = [
-    {
-      label: "Regular",
-      value: "regular",
-    },
-    {
-      label: "VIP",
-      value: "vip",
-    },
-    {
-      label: "VVIP",
-      value: "vvip",
-    },
-  ];
+const SelectWrapper = ({
+  ticketTypes,
+  value,
+  onChange,
+}: SelectWrapperProps) => {
+  const options = ticketTypes.map((ticketType) => ({
+    label: ticketType,
+    value: ticketType,
+  }));
 
   return (
-    <div className="flex items-center gap-2">
-      <Select
-        value={isSelect}
-        onChange={(e) => setIsSelect(e.target.value)}
-        placeholder="Filter by status"
-        options={eventStatus}
-        variant="secondary"
-      />
-      <Select
-        value={isSelect}
-        onChange={(e) => setIsSelect(e.target.value)}
-        placeholder="Filter by type"
-        options={ticketType}
-        variant="secondary"
-      />
-    </div>
+    <Select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      aria-label="Filter by ticket type"
+      placeholder="All ticket types"
+      placeholderDisabled={false}
+      options={options}
+      variant="secondary"
+    />
   );
 };
 
