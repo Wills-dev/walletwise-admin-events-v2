@@ -7,7 +7,10 @@ interface TableBodyWrapProps<TData = unknown> {
   columns: ColumnDef<TData>[];
 }
 
-const TableBodyWrap = ({ table, columns }: TableBodyWrapProps) => {
+const TableBodyWrap = <TData,>({
+  table,
+  columns,
+}: TableBodyWrapProps<TData>) => {
   if (!table) {
     return (
       <TableBody>

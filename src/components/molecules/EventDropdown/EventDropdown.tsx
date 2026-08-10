@@ -1,93 +1,80 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-
 import { ChevronDown, Plus } from "lucide-react";
 
-const events = [
-  "Annual Conference",
-  "Tech Meetup",
-  "Product Launch",
-  "Board Meeting",
-];
+import EventDropdownEmptyState from "@/components/atoms/EventDropdownEmptyState/EventDropdownEmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useEventDropdown } from "@/lib/hooks/useEventDropdown";
+import { PartnerEvent } from "@/lib/types";
 
-const EventDropdown = () => {
-  const router = useRouter();
-  const pathname = usePathname();
+interface EventDropdownProps {
+  events: PartnerEvent[];
+  isLoading: boolean;
+}
 
-  const [eventName, setEventName] = useState("");
-  const [open, setOpen] = useState(false);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleSelectEvent = (name: string) => {
-    setEventName(name);
-    const slug = name.toLowerCase().replace(/\s+/g, "-");
-
-    router.push(`${pathname}?event=${slug}`);
-    setOpen(false);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+const EventDropdown = ({ events, isLoading }: EventDropdownProps) => {
+  const {
+    containerRef,
+    selectedEvent,
+    isOpen,
+    toggleDropdown,
+    handleSelectEvent,
+    handleCreateEvent,
+  } = useEventDropdown(events);
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full space-y-2 border border-[#E5E5E5] bg-white py-2.25  rounded-[10px] px-1"
+      className="relative w-full space-y-2 rounded-[10px] border border-[#E5E5E5] bg-white px-1 py-2.25"
     >
-      <label className="text-[10px] font-medium text-[#737373] px-2">
+      <label className="px-2 text-[10px] font-medium text-[#737373]">
         Event name
       </label>
 
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className="w-full flex justify-between p-0 m-0 px-2"
+        onClick={toggleDropdown}
+        disabled={isLoading}
+        className="m-0 flex w-full justify-between p-0 px-2 disabled:cursor-wait"
       >
-        <span className="text-[#262626] hover:text-gray-950 cursor-pointer text-sm truncate">
-          {eventName || "Choose company event"}
-        </span>
-        <ChevronDown className="w-4 h-4 opacity-70" />
+        {isLoading ? (
+          <Skeleton className="h-5 w-32" />
+        ) : (
+          <span className="cursor-pointer truncate text-sm text-[#262626] hover:text-gray-950">
+            {selectedEvent?.name || "Choose company event"}
+          </span>
+        )}
+        <ChevronDown className="h-4 w-4 opacity-70" />
       </button>
 
-      {/* Dropdown */}
-      {open && (
-        <div
-          className="
-            absolute left-0 top-full mt-2 w-full bg-white rounded-2xl shadow-lg z-50
-          "
-        >
-          <div className="">
-            <p className="text-gray-400 text-xs py-2 px-3">Switch event</p>
-            {events.map((event) => (
-              <button
-                key={event}
-                onClick={() => handleSelectEvent(event)}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors border-b border-[#F5F5F5]"
-              >
-                {event}
-              </button>
-            ))}
+      {isOpen && (
+        <div className="absolute left-0 top-full z-50 mt-2 w-full rounded-2xl bg-white shadow-lg">
+          <p className="px-3 py-2 text-xs text-gray-400">Switch event</p>
 
-            <div className="px-3 py-2">
-              <button className="w-full rounded-xl text-[#5c24cc] text-sm font-semibold flex gap-2 items-center">
-                <Plus className="w-4 h-4" />
-                New Event
+          {events.length > 0 ? (
+            events.map((event) => (
+              <button
+                type="button"
+                key={event.id}
+                onClick={() => handleSelectEvent(event.id)}
+                className="w-full border-b border-[#F5F5F5] px-3 py-2 text-left text-sm transition-colors hover:bg-gray-100"
+              >
+                {event.name}
               </button>
-            </div>
+            ))
+          ) : (
+            <EventDropdownEmptyState />
+          )}
+
+          <div className="px-3 py-2">
+            <button
+              type="button"
+              onClick={handleCreateEvent}
+              className="flex w-full items-center gap-2 rounded-xl text-sm font-semibold text-[#5c24cc]"
+            >
+              <Plus className="h-4 w-4" />
+              New Event
+            </button>
           </div>
         </div>
       )}

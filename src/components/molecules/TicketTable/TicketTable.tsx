@@ -1,43 +1,23 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 
-import { Column } from "./Column";
-
-import { tickets } from "@/lib/constants/dummy";
-import { useGetCurrentTicket } from "@/lib/hooks/useGetCurrentTicket";
+import type { TableWrapperProps } from "@/lib/types";
+import type { PartnerTicketRow } from "@/lib/types/tickets";
 
 import TableWrapper from "../TableWrapper/TableWrapper";
+import { Column } from "./Column";
 
-const TicketTable = () => {
-  const {
-    currentPage,
-    limit,
-    setLimit,
-    nextPage,
-    prevPage,
-    goToFirstPage,
-    goToLastPage,
-    isFirstPage,
-    isLastPage,
-  } = useGetCurrentTicket();
+type TicketTableProps = Omit<
+  TableWrapperProps<PartnerTicketRow>,
+  "columns" | "isLoading"
+>;
 
-  const typedColumns = Column as ColumnDef<unknown>[];
-
+const TicketTable = (props: TicketTableProps) => {
   return (
     <TableWrapper
-      columns={typedColumns}
-      data={tickets || []}
-      totalPages={1}
-      currentPage={currentPage}
-      prevPage={prevPage}
-      nextPage={nextPage}
-      goToFirstPage={goToFirstPage}
-      goToLastPage={goToLastPage}
-      isFirstPage={isFirstPage}
-      isLastPage={isLastPage}
-      limit={limit}
-      setLimit={setLimit}
+      columns={Column as ColumnDef<PartnerTicketRow>[]}
+      {...props}
     />
   );
 };

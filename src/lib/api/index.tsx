@@ -1,4 +1,9 @@
 import { axiosInstance } from "../axiosInstance";
+import {
+  ApiResponse,
+  LoginResponseData,
+  Partner,
+} from "../types";
 
 export const login = async ({
   email,
@@ -6,7 +11,7 @@ export const login = async ({
 }: {
   email: string;
   password: string;
-}) => {
+}): Promise<ApiResponse<LoginResponseData>> => {
   try {
     const { data } = await axiosInstance.post("/partner/login", {
       email,
@@ -59,10 +64,10 @@ export const verifyLogin = async ({
   }
 };
 
-export const getCurrentUser = async () => {
+export const getCurrentPartner = async (): Promise<ApiResponse<Partner>> => {
   try {
-    const { data } = await axiosInstance.get("/admins/me");
-    return data?.data;
+    const { data } = await axiosInstance.get("/partner/me");
+    return data;
   } catch (error) {
     throw error;
   }

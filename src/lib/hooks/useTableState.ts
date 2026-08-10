@@ -115,6 +115,15 @@ export const useTableState = () => {
     });
   };
 
+  const goToPage = (page: number) => {
+    const nextPage = Math.max(page, 1);
+
+    setCurrentPage(nextPage);
+    updateParams({
+      page: nextPage,
+    });
+  };
+
   const isLastPage = (totalPages: number) => {
     return currentPage === totalPages;
   };
@@ -169,6 +178,7 @@ export const useTableState = () => {
     prevPage,
     goToFirstPage,
     goToLastPage,
+    goToPage,
 
     isFirstPage,
     isLastPage,

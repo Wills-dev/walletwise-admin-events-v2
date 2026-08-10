@@ -22,7 +22,7 @@ export interface TicketTypePayload {
   capacity: number;
 }
 
-export type CustomInputType = "Text" | "Number" | "Date";
+export type CustomInputType = "Text" | "Number" | "Date" | "Image";
 
 export interface CustomField {
   name: string;
@@ -42,8 +42,30 @@ export type DefaultFields = Record<DefaultFieldKey, DefaultFieldMeta>;
 
 export interface CustomFieldPayload {
   field_name: string;
-  input_type: Lowercase<CustomInputType>;
+  input_type: "text" | "number" | "date" | "file";
   is_required: boolean;
+}
+
+export interface Headliner {
+  artistName: string;
+  imageFile: File | null;
+  imagePreview: string | null;
+}
+
+export interface Prize {
+  name: string;
+  description: string;
+  imageFile: File | null;
+  imagePreview: string | null;
+}
+
+export interface HeadlinerPayload {
+  artist_name: string;
+}
+
+export interface PrizePayload {
+  name: string;
+  description: string;
 }
 
 export interface FormSettings {
@@ -69,6 +91,8 @@ export interface EventPayload {
   service_fee: number;
   refund_policy: string;
   ticket_types: TicketTypePayload[];
+  headliner?: HeadlinerPayload[];
+  prizes?: PrizePayload[];
   form_settings?: FormSettingsPayload;
 }
 
@@ -87,5 +111,7 @@ export interface EventFormState {
   serviceFee: number;
   refundPolicy: string;
   ticketTypes: Record<string, TicketType>;
+  headliners: Headliner[];
+  prizes: Prize[];
   formSettings: FormSettings | null;
 }

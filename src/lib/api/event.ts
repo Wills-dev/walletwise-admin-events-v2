@@ -1,9 +1,18 @@
 import { axiosInstance } from "../axiosInstance";
 import { EventPayload } from "../types/events";
+import type {
+  PartnerEventAnalyticsParams,
+  PartnerEventAnalyticsResponse,
+} from "../types/analytics";
 
-export const getPartnerEventAnalytics = async (): Promise<unknown> => {
+export const getPartnerEventAnalytics = async (
+  params: PartnerEventAnalyticsParams = {},
+): Promise<PartnerEventAnalyticsResponse> => {
   try {
-    const { data } = await axiosInstance.get("/partner-event");
+    const { data } = await axiosInstance.get<PartnerEventAnalyticsResponse>(
+      "/partner-event",
+      { params },
+    );
     return data;
   } catch (error) {
     throw error;
@@ -14,9 +23,13 @@ export const createEvent = async ({
   buildPayload,
   thumbnail,
   banner,
+  headlinerImages,
+  prizeImages,
 }: {
   thumbnail: File;
   banner: File | null;
+  headlinerImages: File[];
+  prizeImages: File[];
   buildPayload: EventPayload;
 }) => {
   try {
@@ -36,6 +49,20 @@ export const createEvent = async ({
 
     formData.append("ticket_types", JSON.stringify(buildPayload.ticket_types));
     formData.append("thumbnail", thumbnail, thumbnail.name);
+
+    if (buildPayload.headliner) {
+      formData.append("headliner", JSON.stringify(buildPayload.headliner));
+      headlinerImages.forEach((image) => {
+        formData.append("headliner_images", image, image.name);
+      });
+    }
+
+    if (buildPayload.prizes) {
+      formData.append("prizes", JSON.stringify(buildPayload.prizes));
+      prizeImages.forEach((image) => {
+        formData.append("prize_images", image, image.name);
+      });
+    }
 
     if (banner) {
       formData.append("banner", banner, banner.name);

@@ -4,6 +4,9 @@ const StatusBubble = ({ status }: { status: string }) => {
     inactive: "text-yellow-400 bg-yellow-500/10 border border-yellow-500/20",
     Ongoing: "text-blue-400 bg-blue-500/10 border border-blue-500/20",
     Completed: "text-green-400 bg-green-500/10 border border-green-500/20",
+    Approved: "text-green-600 bg-green-500/10 border border-green-500/20",
+    Pending: "text-yellow-600 bg-yellow-500/10 border border-yellow-500/20",
+    Rejected: "text-red-500 bg-red-500/10 border border-red-500/20",
   };
 
   return (

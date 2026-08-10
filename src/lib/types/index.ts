@@ -21,6 +21,7 @@ export interface TableWrapperProps<TData = unknown> {
   limit: number;
   setLimit: (limit: number) => void;
   isLoading?: boolean;
+  paginationMode?: "client" | "server";
 }
 
 export interface LoginProps {
@@ -78,4 +79,33 @@ export interface User {
   profileComplete: boolean;
   emailVerified: boolean;
   role: "user";
+}
+
+export interface PartnerEvent {
+  id: string;
+  name: string;
+}
+
+export interface Partner {
+  id: string;
+  company_name: string;
+  email: string;
+  phone_number?: string;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
+  last_login?: string;
+  created_by?: string;
+  events?: PartnerEvent[];
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface LoginResponseData {
+  token: string;
+  partner: Pick<Partner, "id" | "company_name" | "email">;
 }

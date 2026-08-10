@@ -6,7 +6,7 @@ interface TableHeaderProps<TData = unknown> {
   table: Table<TData>;
 }
 
-const TableHeaderWrap = ({ table }: TableHeaderProps) => {
+const TableHeaderWrap = <TData,>({ table }: TableHeaderProps<TData>) => {
   return (
     <TableHeader>
       {table?.getHeaderGroups().map((headerGroup) => (

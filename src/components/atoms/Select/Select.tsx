@@ -6,12 +6,14 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   className?: string;
   options: optionsType[];
   placeholder?: string;
+  placeholderDisabled?: boolean;
   variant?: "primary" | "secondary";
 }
 
 const Select = ({
   options,
   placeholder,
+  placeholderDisabled = true,
   className = "",
   variant = "primary",
   ...props
@@ -38,7 +40,7 @@ const Select = ({
         className={clsx(styles?.select, className)}
         {...props}
       >
-        <option value="" disabled>
+        <option value="" disabled={placeholderDisabled}>
           {placeholder || "Select an option"}
         </option>
         {options.map((option) => (

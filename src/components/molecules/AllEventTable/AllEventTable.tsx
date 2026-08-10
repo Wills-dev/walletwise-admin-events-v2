@@ -1,46 +1,27 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 
-import { Column } from "./Column";
-import { dummyEvents } from "@/lib/constants/dummy";
-import { useGetCurrentTicket } from "@/lib/hooks/useGetCurrentTicket";
+import type { TableWrapperProps } from "@/lib/types";
+import type { PartnerAnalyticsEvent } from "@/lib/types/analytics";
 
 import TableWrapper from "../TableWrapper/TableWrapper";
+import { Column } from "./Column";
 
-const AllEventTable = () => {
-  const {
-    currentPage,
-    limit,
-    setLimit,
-    nextPage,
-    prevPage,
-    goToFirstPage,
-    goToLastPage,
-    isFirstPage,
-    isLastPage,
-  } = useGetCurrentTicket();
+type AllEventTableProps = Omit<
+  TableWrapperProps<PartnerAnalyticsEvent>,
+  "columns" | "isLoading"
+>;
 
-  const typedColumns = Column as ColumnDef<unknown>[];
-
+const AllEventTable = (props: AllEventTableProps) => {
   return (
-    <div className="border border-[#F5F5F5] rounded-[16px]">
-      <div className="py-4 px-6">
-        <h6 className="text-[#737373] font-medium">Recent Registrations</h6>
+    <div className="rounded-[16px] border border-[#F5F5F5]">
+      <div className="px-6 py-4">
+        <h6 className="font-medium text-[#737373]">Events</h6>
       </div>
       <TableWrapper
-        columns={typedColumns}
-        data={dummyEvents || []}
-        totalPages={1}
-        currentPage={currentPage}
-        prevPage={prevPage}
-        nextPage={nextPage}
-        goToFirstPage={goToFirstPage}
-        goToLastPage={goToLastPage}
-        isFirstPage={isFirstPage}
-        isLastPage={isLastPage}
-        limit={limit}
-        setLimit={setLimit}
+        columns={Column as ColumnDef<PartnerAnalyticsEvent>[]}
+        {...props}
       />
     </div>
   );

@@ -1,6 +1,8 @@
 import CrownIcon from "@/components/atoms/icons/CrownIcon";
 import NavLink from "@/components/atoms/NavLink/NavLink";
 import EventDropdown from "@/components/molecules/EventDropdown/EventDropdown";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetCurrentPartner } from "@/lib/hooks/useGetCurrentPartner";
 import { useLogout } from "@/lib/hooks/useLogout";
 
 import {
@@ -19,11 +21,8 @@ const Sidebar = ({
   isOpen: boolean;
   toggleMenu: () => void;
 }) => {
-  const currentUser = {
-    companyName: "Ejanla-1",
-  };
-
   const { logout, isLoggingOut } = useLogout();
+  const { currentUser, isLoading } = useGetCurrentPartner();
 
   const sidebarLinks = [
     { href: "/overview", title: "overview", icon: LayoutDashboard },
@@ -44,9 +43,13 @@ const Sidebar = ({
                 <CrownIcon />
               </div>
               <div className="space-y-0.5">
-                <h6 className="text-sm font-semibold leading-5.25">
-                  {currentUser?.companyName}
-                </h6>
+                {isLoading && !currentUser ? (
+                  <Skeleton className="h-5 w-24" />
+                ) : (
+                  <h6 className="text-sm font-semibold leading-5.25">
+                    {currentUser?.company_name}
+                  </h6>
+                )}
                 <p className="text-xs font-medium text-[#737373]">Admin</p>
               </div>
             </div>
@@ -61,7 +64,10 @@ const Sidebar = ({
             )}
           </div>
           <div className="space-y-4">
-            <EventDropdown />
+            <EventDropdown
+              events={currentUser?.events ?? []}
+              isLoading={isLoading && currentUser?.events === undefined}
+            />
             <ul className="space-y-1">
               {sidebarLinks?.map((item) => (
                 <NavLink

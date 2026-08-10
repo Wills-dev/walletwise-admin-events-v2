@@ -22,7 +22,7 @@ import TableBodyWrap from "@/components/molecules/TableBodyWrap/TableBodyWrap";
 import PaginationComponent from "@/components/molecules/PaginationComponent/PaginationComponent";
 import TableLoader from "@/components/atoms/skeleton/TableLoader";
 
-const TableWrapper = ({
+const TableWrapper = <TData,>({
   columns,
   data,
   totalPages,
@@ -36,7 +36,8 @@ const TableWrapper = ({
   limit,
   setLimit,
   isLoading,
-}: TableWrapperProps) => {
+  paginationMode = "server",
+}: TableWrapperProps<TData>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -60,7 +61,8 @@ const TableWrapper = ({
       columnVisibility,
       rowSelection,
       pagination: {
-        pageIndex: 0,
+        pageIndex:
+          paginationMode === "client" ? Math.max(currentPage - 1, 0) : 0,
         pageSize: limit || 10,
       },
     },

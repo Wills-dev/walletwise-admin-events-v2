@@ -1,10 +1,10 @@
-import { User } from "@/lib/types";
+import { Partner } from "@/lib/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface UserSlice {
-  currentUser: User | null;
-  setCurrentUser: (user: User) => void;
+  currentUser: Partner | null;
+  setCurrentUser: (user: Partner) => void;
   clearCurrentUser: () => void;
 }
 
