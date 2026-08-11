@@ -1,21 +1,17 @@
 import Select from "@/components/atoms/Select/Select";
+import type { TicketTypeOption } from "@/lib/helpers/tickets";
 
 interface SelectWrapperProps {
-  ticketTypes: string[];
+  ticketTypeOptions: TicketTypeOption[];
   value: string;
   onChange: (value: string) => void;
 }
 
 const SelectWrapper = ({
-  ticketTypes,
+  ticketTypeOptions,
   value,
   onChange,
 }: SelectWrapperProps) => {
-  const options = ticketTypes.map((ticketType) => ({
-    label: ticketType,
-    value: ticketType,
-  }));
-
   return (
     <Select
       value={value}
@@ -23,7 +19,7 @@ const SelectWrapper = ({
       aria-label="Filter by ticket type"
       placeholder="All ticket types"
       placeholderDisabled={false}
-      options={options}
+      options={ticketTypeOptions}
       variant="secondary"
     />
   );

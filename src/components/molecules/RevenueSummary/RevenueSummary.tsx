@@ -1,41 +1,56 @@
-import { TrendingUp, Banknote } from "lucide-react";
+import { Banknote } from "lucide-react";
+
+import SummaryCard from "@/components/atoms/SummaryCard/SummaryCard";
+import { numberWithCommas } from "@/lib/helpers/formatNumbers";
 
 import SummaryCardWrapper from "../SummaryCardWrapper/SummaryCardWrapper";
-import SummaryCard from "@/components/atoms/SummaryCard/SummaryCard";
 
-const RevenueSummary = () => {
+interface RevenueSummaryProps {
+  totalRevenue: number;
+  averageOrderValue: number | null;
+}
+
+const RevenueSummary = ({
+  totalRevenue,
+  averageOrderValue,
+}: RevenueSummaryProps) => {
   return (
     <SummaryCardWrapper variant="maxThree">
       <SummaryCard
         title="Gross Revenue"
-        value={"4.5m"}
+        value={numberWithCommas(totalRevenue)}
         currency="NGN"
         icon={Banknote}
       >
-        <div className="flex items-center gap-1 text-green-500">
-          <TrendingUp className="w-3.25 h-3.25" />
-          <span className="text-xs font-medium">+3.5% vs last periodh</span>
+        <div className="flex items-center gap-1 text-[#737373]">
+          <span className="text-xs font-medium">Across ticket sales</span>
         </div>
       </SummaryCard>
       <SummaryCard
         title="Average Order Value"
-        value={"14,849.00"}
-        currency="NGN"
+        value={
+          averageOrderValue === null
+            ? "—"
+            : numberWithCommas(averageOrderValue)
+        }
+        currency={averageOrderValue === null ? undefined : "NGN"}
         icon={Banknote}
       >
-        <div className="flex items-center gap-1 text-green-500">
-          <TrendingUp className="w-3.25 h-3.25" />
-          <span className="text-xs font-medium">Per transactions</span>
+        <div className="flex items-center gap-1 text-[#737373]">
+          <span className="text-xs font-medium">
+            {averageOrderValue === null
+              ? "No sold tickets yet"
+              : "Based on tickets sold"}
+          </span>
         </div>
       </SummaryCard>
       <SummaryCard
         title="Confirmed Revenue"
-        value={"162k"}
+        value={numberWithCommas(totalRevenue)}
         currency="NGN"
         icon={Banknote}
       >
-        <div className="flex items-center gap-1 text-green-500">
-          <TrendingUp className="w-3.25 h-3.25" />
+        <div className="flex items-center gap-1 text-[#737373]">
           <span className="text-xs font-medium">Locked in</span>
         </div>
       </SummaryCard>

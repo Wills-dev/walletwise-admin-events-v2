@@ -18,11 +18,12 @@ export const useEventDropdown = (events: PartnerEvent[]) => {
   const setSelectedEventId = useSelectedEventStore(
     (state) => state.setSelectedEventId,
   );
+  const eventIdFromUrl = searchParams.get("event");
+  const requestedEventId = eventIdFromUrl ?? selectedEventId;
 
-  const selectedEvent = events.find((event) => event.id === selectedEventId);
+  const selectedEvent = events.find((event) => event.id === requestedEventId);
 
   const handleSelectEvent = (eventId: string) => {
-    setSelectedEventId(eventId);
     const params = new URLSearchParams(searchParams.toString());
     params.set("event", eventId);
     router.push(`${pathname}?${params.toString()}`);
@@ -35,12 +36,18 @@ export const useEventDropdown = (events: PartnerEvent[]) => {
   };
 
   useEffect(() => {
-    const eventIdFromUrl = searchParams.get("event");
+    const isValidUrlEvent = events.some(
+      (event) => event.id === eventIdFromUrl,
+    );
 
-    if (eventIdFromUrl && !selectedEventId) {
+    if (
+      eventIdFromUrl &&
+      isValidUrlEvent &&
+      eventIdFromUrl !== selectedEventId
+    ) {
       setSelectedEventId(eventIdFromUrl);
     }
-  }, [searchParams, selectedEventId, setSelectedEventId]);
+  }, [eventIdFromUrl, events, selectedEventId, setSelectedEventId]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

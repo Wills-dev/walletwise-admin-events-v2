@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { SubmitEvent, useEffect, useState } from "react";
 
@@ -7,12 +7,14 @@ import { useEventStore } from "@/store/useEventStore";
 import { ApiErrorResponse, promiseErrorFunction } from "../types";
 import { toast } from "sonner";
 import { validateEventForm } from "../helpers/validateEventForm";
+import { CURRENT_PARTNER_QUERY_KEY } from "./useGetCurrentPartner";
 
 const ALL_EVENTS_ROUTE = "/tickets";
 const REDIRECT_SECONDS = 15;
 
 export const useSubmitEvent = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [redirectSeconds, setRedirectSeconds] = useState(REDIRECT_SECONDS);
 
   const { buildPayload, resetForm } = useEventStore();
@@ -20,6 +22,10 @@ export const useSubmitEvent = () => {
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: createEvent,
     onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: CURRENT_PARTNER_QUERY_KEY,
+        exact: true,
+      });
       resetForm();
       setRedirectSeconds(REDIRECT_SECONDS);
     },

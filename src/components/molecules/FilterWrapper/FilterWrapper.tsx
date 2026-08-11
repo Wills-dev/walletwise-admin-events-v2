@@ -1,11 +1,12 @@
 import SearchForm from "@/components/atoms/SearchForm/SearchForm";
+import type { TicketTypeOption } from "@/lib/helpers/tickets";
 
 import SelectWrapper from "../SelectWrapper/SelectWrapper";
 
 interface FilterWrapperProps {
   search: string;
   onSearchChange: (value: string) => void;
-  ticketTypes: string[];
+  ticketTypeOptions: TicketTypeOption[];
   selectedTicketType: string;
   onTicketTypeChange: (value: string) => void;
   resultsCount: number;
@@ -14,7 +15,7 @@ interface FilterWrapperProps {
 const FilterWrapper = ({
   search,
   onSearchChange,
-  ticketTypes,
+  ticketTypeOptions,
   selectedTicketType,
   onTicketTypeChange,
   resultsCount,
@@ -24,7 +25,7 @@ const FilterWrapper = ({
       <SearchForm value={search} onChange={onSearchChange} />
       <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
         <SelectWrapper
-          ticketTypes={ticketTypes}
+          ticketTypeOptions={ticketTypeOptions}
           value={selectedTicketType}
           onChange={onTicketTypeChange}
         />

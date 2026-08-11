@@ -3,6 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { numberWithCommas } from "@/lib/helpers/formatNumbers";
+import { getTicketTypeLabel } from "@/lib/helpers/tickets";
 import type { PartnerTicketRow } from "@/lib/types/tickets";
 
 const columnHelper = createColumnHelper<PartnerTicketRow>();
@@ -66,7 +67,7 @@ export const Column = [
     header: "Ticket Type",
     cell: ({ getValue }) => (
       <span className="inline-flex rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-medium text-[#5A27CC]">
-        {getValue()?.trim() || "Unspecified"}
+        {getTicketTypeLabel(getValue())}
       </span>
     ),
   }),

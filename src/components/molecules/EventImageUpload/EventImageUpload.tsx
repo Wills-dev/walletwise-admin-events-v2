@@ -11,6 +11,7 @@ interface EventImageUploadProps {
   required?: boolean;
   file: File | null;
   preview: string | null;
+  existingFileName?: string;
   onChange: (file: File | null) => void;
   onClear: () => void;
 }
@@ -21,6 +22,7 @@ const EventImageUpload = ({
   required = false,
   file,
   preview,
+  existingFileName,
   onChange,
   onClear,
 }: EventImageUploadProps) => {
@@ -48,11 +50,13 @@ const EventImageUpload = ({
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">
-            {file?.name ?? "No image chosen"}
+            {file?.name ?? existingFileName ?? "No image chosen"}
           </p>
           <p className="text-xs text-[#737373]">
             {file
               ? `${Math.max(1, Math.round(file.size / 1024))} KB • Ready to upload`
+              : preview
+                ? "Current image • Choose a file to replace it"
               : "JPG, JPEG, PNG & WEBP • Max 10 MB"}
           </p>
         </div>
@@ -72,7 +76,7 @@ const EventImageUpload = ({
             className="flex h-9 cursor-pointer items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-colors hover:bg-[#F9FAFB]"
           >
             <Upload className="size-4" aria-hidden="true" />
-            Upload
+            {preview ? "Replace" : "Upload"}
           </label>
         )}
 
@@ -82,7 +86,10 @@ const EventImageUpload = ({
           name={id}
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          onChange={(event) => onChange(event.target.files?.[0] ?? null)}
+          onChange={(event) => {
+            onChange(event.target.files?.[0] ?? null);
+            event.currentTarget.value = "";
+          }}
           className="sr-only"
         />
       </div>

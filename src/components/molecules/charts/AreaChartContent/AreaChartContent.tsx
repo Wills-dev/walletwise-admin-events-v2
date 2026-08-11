@@ -9,37 +9,34 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-
-import { useGetCurrentEventChart } from "@/lib/hooks/useGetCurrentEventChart";
 import { numberWithCommas } from "@/lib/helpers/formatNumbers";
 
 import ChartTitle from "@/components/atoms/ChartTitle/ChartTitle";
 import ChartDesc from "@/components/atoms/ChartDesc/ChartDesc";
+import { ChartDataPoint } from "@/lib/types/charts";
 
-const chartData = [
-  { month: "January", revenue: 186 },
-  { month: "February", revenue: 305 },
-  { month: "March", revenue: 237 },
-  { month: "April", revenue: 73 },
-  { month: "May", revenue: 209 },
-  { month: "June", revenue: 214 },
-];
 const chartConfig = {
-  revenue: {
+  value: {
     label: "Revenue",
     color: "#b4f7b4",
   },
 } satisfies ChartConfig;
 
-const AreaChartContent = () => {
-  const totalRevenue = 501000;
-  const { handleFilterChange, filter } = useGetCurrentEventChart();
-
+const AreaChartContent = ({
+  data,
+  filter,
+  setFilter,
+  totalRevenue,
+}: {
+  data: ChartDataPoint[];
+  filter: string;
+  setFilter: (filter: string) => void;
+  totalRevenue: number;
+}) => {
   const filterOPtions = [
-    { label: "Today", value: "today" },
     { label: "7 days", value: "7days" },
     { label: "30 days", value: "30days" },
-    { label: "All time", value: "" },
+    { label: "All time", value: "all" },
   ];
 
   return (
@@ -51,7 +48,7 @@ const AreaChartContent = () => {
             <div className="flex bg-[#F5F5F5] border border-[#F5F5F5] p-0.5 rounded-[8px]">
               {filterOPtions?.map((item) => (
                 <button
-                  onClick={() => handleFilterChange(item.value)}
+                  onClick={() => setFilter(item.value)}
                   key={item?.label}
                   className={`px-2 py-1 font-medium text-xs cursor-pointer rounded-[6px] ${item.value !== filter ? "text-[#737373]" : "bg-white text-[#262626]"}`}
                 >
@@ -68,7 +65,7 @@ const AreaChartContent = () => {
           <ChartContainer config={chartConfig} className="h-[250px] w-full">
             <AreaChart
               accessibilityLayer
-              data={chartData}
+              data={data}
               margin={{
                 left: 12,
                 right: 12,
@@ -76,18 +73,18 @@ const AreaChartContent = () => {
             >
               <CartesianGrid vertical={false} />
               <XAxis
-                dataKey="month"
+                dataKey="label"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
+                tickFormatter={(value: string) => value.slice(0, 30)}
               />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent indicator="dashed" />}
               />
               <Area
-                dataKey="revenue"
+                dataKey="value"
                 type="linear"
                 fill="#acecbe"
                 fillOpacity={0.4}
